@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Catalog Pro</title>
+    <style>
+        :root {
+            --bg: #1a1a2e;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text: white;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
+            --header-bg: rgba(26, 26, 46, 0.97);
+        }
+        
+        .light-theme {
+            --bg: #f0f2f5;
+            --card-bg: white;
+            --text: #1a1a2e;
+            --text-secondary: #666;
+            --border: #e0e0e0;
+            --header-bg: white;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            color: var(--text);
+            transition: all 0.3s;
+        }
+        
+        header {
+            background: var(--header-bg);
+            padding: 0.7rem 1.5rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea, #f5576c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            white-space: nowrap;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .header-actions button, .user-btn {
+            padding: 7px 12px;
+            font-size: 13px;
+        }
+        
+        .user-btn {
+            background: rgba(102, 126, 234, 0.2);
+            color: var(--text);
+            border-radius: 25px;
+            cursor: pointer;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-weight: 600;
+        }
+        
+        .user-btn:hover {
+            background: rgba(102, 126, 234, 0.4);
+        }
+        
+        .nav {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 0.4rem;
+        }
+        
+        .nav button {
+            padding: 6px 16px;
+            font-size: 13px;
+        }
+
+        button {
+            padding: 8px 18px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .btn-top { background: linear-gradient(135deg, #f5576c, #f093fb); color: white; }
+        .btn-season { background: linear-gradient(135deg, #4facfe, #00f2fe); color: white; }
+        .btn-search { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-random { background: linear-gradient(135deg, #f39c12, #e74c3c); color: white; }
+        .btn-fav { background: linear-gradient(135deg, #e74c3c, #c0392b); color: white; }
+        .btn-theme { background: var(--card-bg); color: var(--text); border: 1px solid var(--border); }
+        .btn-logout { background: #e74c3c; color: white; padding: 5px 10px; font-size: 12px; }
+        
+        button:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3); }
+        button:active { transform: translateY(0); }
+        
+        .season-selector {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 0.4rem;
+        }
+
+        .season-btn {
+            padding: 4px 12px;
+            font-size: 11px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: transparent;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .season-btn:hover, .season-btn.active {
+            background: rgba(102, 126, 234, 0.5);
+            border-color: #667eea;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 8px;
+            flex: 1;
+            max-width: 400px;
+            min-width: 200px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 7px 14px;
+            font-size: 13px;
+        }
+        
+        .search-box button {
+            padding: 7px 15px;
+            font-size: 13px;
+        }
+
+        input {
+            padding: 10px 16px;
+            border-radius: 25px;
+            border: 2px solid #764ba2;
+            background: var(--card-bg);
+            color: var(--text);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .genre-filter {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding-bottom: 0.3rem;
+        }
+        
+        .genre-btn {
+            padding: 3px 10px;
+            border-radius: 15px;
+            border: 1px solid rgba(102, 126, 234, 0.4);
+            background: transparent;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        
+        .genre-btn:hover, .genre-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.2rem;
+            padding: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+        }
+        
+        .card:hover {
+            transform: translateY(-6px);
+            border-color: #764ba2;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.25);
+        }
+        
+        .card-img {
+            height: 280px;
+            position: relative;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .score {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #f5576c;
+            padding: 4px 9px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 13px;
+            color: white;
+        }
+        
+        .fav-btn {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            padding: 0;
+            z-index: 5;
+        }
+        
+        .fav-btn:hover { transform: scale(1.1); }
+        .fav-btn.active { background: #e74c3c; }
+        
+        .info { padding: 0.8rem; }
+        .info h2 { font-size: 0.9rem; margin-bottom: 0.3rem; line-height: 1.3; color: var(--text); }
+        
+        .genres {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin: 0.4rem 0;
+        }
+        
+        .genre {
+            background: rgba(102, 126, 234, 0.3);
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+        }
+        
+        .meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .pagination button {
+            background: var(--card-bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        
+        .pagination button:hover:not(:disabled) {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .page-info {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background: var(--bg);
+            margin: 2% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 750px;
+            position: relative;
+            border: 1px solid var(--border);
+        }
+        
+        .auth-modal {
+            max-width: 400px;
+        }
+
+        .auth-modal h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+        }
+
+        .auth-modal form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .auth-modal input {
+            padding: 12px 16px;
+            border-radius: 25px;
+        }
+
+        .auth-modal button[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            margin-top: 0.5rem;
+        }
+
+        .auth-link {
+            text-align: center;
+            margin-top: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .auth-link a {
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #f5576c);
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 2rem;
+            color: #764ba2;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.3s;
+        }
+        
+        .close:hover { color: #f5576c; }
+        
+        .modal-body img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-body h2 { font-size: 1.8rem; margin-bottom: 1rem; color: var(--text); }
+        .modal-body p { color: var(--text-secondary); line-height: 1.6; margin-bottom: 0.5rem; }
+        
+        .synopsis {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: var(--card-bg);
+            border-radius: 10px;
+        }
+        
+        .loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(102, 126, 234, 0.3);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .favorites-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 199;
+        }
+        
+        .favorites-overlay.open { display: block; }
+        
+        .favorites-panel {
+            position: fixed;
+            right: -350px;
+            top: 0;
+            height: 100%;
+            width: 340px;
+            background: var(--header-bg);
+            z-index: 200;
+            box-shadow: -5px 0 30px rgba(0, 0, 0, 0.3);
+            overflow-y: auto;
+            padding: 1.5rem;
+            transition: right 0.3s ease;
+        }
+        
+        .favorites-panel.open { right: 0; }
+        
+        .favorites-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .favorites-header h3 { color: var(--text); font-size: 1.3rem; }
+        
+        .btn-close-panel {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            padding: 0;
+        }
+        
+        .btn-close-panel:hover {
+            background: #e74c3c;
+            border-color: #e74c3c;
+            color: white;
+        }
+        
+        .fav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 5px;
+        }
+        
+        .fav-item:hover { background: var(--card-bg); }
+        .fav-item img { width: 45px; height: 64px; object-fit: cover; border-radius: 5px; }
+        .fav-item-content { flex: 1; }
+        .fav-item-title { font-size: 13px; color: var(--text); margin-bottom: 4px; }
+        .fav-item-remove {
+            background: transparent;
+            border: none;
+            color: #e74c3c;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 5px;
+            transition: transform 0.3s;
+        }
+        .fav-item-remove:hover { transform: scale(1.2); }
+        
+        .random-card {
+            max-width: 900px;
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 0.5s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .random-card-inner { display: flex; flex-direction: row; }
+        .random-card-image { flex: 0 0 350px; position: relative; overflow: hidden; }
+        .random-card-image img { width: 100%; height: 100%; object-fit: cover; min-height: 500px; }
+        .random-score {
+            position: absolute; top: 15px; right: 15px;
+            background: #f5576c; color: white; padding: 8px 16px;
+            border-radius: 25px; font-weight: bold; font-size: 18px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .random-card-info { flex: 1; padding: 2rem; display: flex; flex-direction: column; gap: 1rem; }
+        .random-card-info h2 { font-size: 2rem; color: var(--text); line-height: 1.3; }
+        .random-title-en { color: var(--text-secondary); font-size: 1rem; font-style: italic; }
+        .random-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+        .random-badge {
+            background: rgba(102, 126, 234, 0.2); color: #667eea;
+            padding: 5px 12px; border-radius: 15px; font-size: 13px; font-weight: 600;
+        }
+        .random-genres { display: flex; flex-wrap: wrap; gap: 6px; }
+        .random-genre {
+            background: rgba(102, 126, 234, 0.3); color: var(--text);
+            padding: 4px 10px; border-radius: 12px; font-size: 12px;
+        }
+        .random-synopsis { color: var(--text-secondary); line-height: 1.6; font-size: 14px; max-height: 150px; overflow-y: auto; padding-right: 10px; }
+        .random-synopsis strong { color: var(--text); display: block; margin-bottom: 5px; }
+        .random-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: auto; }
+        .random-actions button, .random-actions a {
+            flex: 1; min-width: 120px; text-align: center; text-decoration: none;
+            padding: 12px 20px; border-radius: 25px; font-weight: 600; font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); padding: 1rem; gap: 0.8rem; }
+            h1 { font-size: 1.3rem; order: 1; }
+            .modal-content { margin: 10% auto; padding: 1rem; }
+            .header-top { flex-direction: column; gap: 0.5rem; }
+            .favorites-panel { width: 100%; right: -100%; }
+            .search-box { max-width: 100%; order: 2; }
+            .header-actions { order: 3; }
+            .random-card-inner { flex-direction: column; }
+            .random-card-image { flex: 0 0 300px; }
+            .random-card-image img { min-height: 300px; }
+            .random-card-info { padding: 1.5rem; }
+            .random-card-info h2 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <h1>Anime Catalog Pro</h1>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Поиск аниме..." onkeypress="if(event.key==='Enter')searchAnime()">
+                <button class="btn-search" onclick="searchAnime()">🔍</button>
+            </div>
+            <div class="header-actions" id="headerActions"></div>
+        </div>
+        
+        <div class="nav">
+            <button class="btn-top" onclick="resetGridAndLoad('/anime/popular')">🔥 ТОП</button>
+            <button class="btn-season" onclick="loadCurrentSeason()">📺 Текущий сезон</button>
+        </div>
+        
+        <div class="season-selector">
+            <button class="season-btn" onclick="loadSeason('2026', 'spring')">🌸 Весна 2026</button>
+            <button class="season-btn" onclick="loadSeason('2026', 'winter')">❄️ Зима 2026</button>
+            <button class="season-btn" onclick="loadSeason('2025', 'fall')">🍂 Осень 2025</button>
+            <button class="season-btn" onclick="loadSeason('2025', 'summer')">☀️ Лето 2025</button>
+        </div>
+        
+        <div class="genre-filter" id="genreFilter"></div>
+    </header>
+
+    <div class="grid" id="grid">
+        <div class="loading"><div class="spinner"></div><p>Загрузка...</p></div>
+    </div>
+    
+    <div class="pagination" id="pagination" style="display:none;"></div>
+
+    <div class="favorites-overlay" id="favoritesOverlay" onclick="closeFavorites()"></div>
+    
+    <div class="favorites-panel" id="favoritesPanel">
+        <div class="favorites-header">
+            <h3>❤️ Избранное</h3>
+            <button class="btn-close-panel" onclick="closeFavorites()">✕</button>
+        </div>
+        <div id="favoritesList"></div>
+    </div>
+
+    <!-- Модальные окна -->
+    <div class="modal" id="animeModal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('animeModal')">&times;</span>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content auth-modal">
+            <span class="close" onclick="closeModal('loginModal')">&times;</span>
+            <h2>Вход</h2>
+            <form onsubmit="login(event)">
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Пароль" required>
+                <button type="submit" class="btn-search">Войти</button>
+            </form>
+            <p class="auth-link">Нет аккаунта? <a onclick="closeModal('loginModal'); openModal('registerModal');">Зарегистрироваться</a></p>
+        </div>
+    </div>
+
+    <div class="modal" id="registerModal">
+        <div class="modal-content auth-modal">
+            <span class="close" onclick="closeModal('registerModal')">&times;</span>
+            <h2>Регистрация</h2>
+            <form onsubmit="register(event)">
+                <input type="text" id="regUsername" placeholder="Имя пользователя" required>
+                <input type="email" id="regEmail" placeholder="Email" required>
+                <input type="password" id="regPassword" placeholder="Пароль (мин. 6 символов)" required minlength="6">
+                <button type="submit" class="btn-search">Зарегистрироваться</button>
+            </form>
+            <p class="auth-link">Уже есть аккаунт? <a onclick="closeModal('registerModal'); openModal('loginModal');">Войти</a></p>
+        </div>
+    </div>
+
+    <div class="modal" id="profileModal">
+        <div class="modal-content auth-modal">
+            <span class="close" onclick="closeModal('profileModal')">&times;</span>
+            <div style="text-align:center;">
+                <div class="profile-avatar" id="profileAvatar"></div>
+                <h2 id="profileName" style="margin-bottom:0.5rem;"></h2>
+                <p id="profileEmail" style="color:var(--text-secondary);"></p>
+                <p style="margin-top:1rem;">В избранном: <strong id="profileFavCount">0</strong> аниме</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://localhost:3000/api';
+        let currentPage = 1;
+        let currentEndpoint = '/anime/popular';
+        let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+        let favorites = [];
+
+        function getGrid() { return document.getElementById('grid'); }
+
+        function resetGridStyles() {
+            const grid = getGrid();
+            grid.style.display = ''; grid.style.justifyContent = '';
+            grid.style.alignItems = ''; grid.style.minHeight = ''; grid.style.padding = '';
+        }
+
+        function openModal(id) {
+            document.getElementById(id).style.display = 'block';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        // === АВТОРИЗАЦИЯ ===
+        async function register(e) {
+            e.preventDefault();
+            const username = document.getElementById('regUsername').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value.trim();
+            
+            const res = await fetch(API + '/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, password })
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                currentUser = data.user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                updateAuthUI();
+                closeModal('registerModal');
+                loadFavorites();
+            } else {
+                alert(data.error);
+            }
+        }
+
+        async function login(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            
+            const res = await fetch(API + '/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+            
+            if (data.success) {
+                currentUser = data.user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                updateAuthUI();
+                closeModal('loginModal');
+                loadFavorites();
+            } else {
+                alert(data.error);
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            favorites = [];
+            updateAuthUI();
+            updateFavCount();
+        }
+
+        function showProfile() {
+            if (!currentUser) return;
+            document.getElementById('profileName').textContent = currentUser.username;
+            document.getElementById('profileEmail').textContent = currentUser.email;
+            document.getElementById('profileAvatar').textContent = currentUser.username[0].toUpperCase();
+            document.getElementById('profileFavCount').textContent = favorites.length;
+            openModal('profileModal');
+        }
+
+        function updateAuthUI() {
+            const container = document.getElementById('headerActions');
+            if (currentUser) {
+                container.innerHTML = `
+                    <span class="user-btn" onclick="showProfile()">👤 ${currentUser.username}</span>
+                    <button class="btn-random" onclick="loadRandom()">🎲</button>
+                    <button class="btn-fav" onclick="openFavorites()">❤️ <span id="favCount"></span></button>
+                    <button class="btn-theme" onclick="toggleTheme()">🌓</button>
+                    <button class="btn-logout" onclick="logout()">Выйти</button>`;
+            } else {
+                container.innerHTML = `
+                    <button onclick="openModal('loginModal')">👤 Войти</button>
+                    <button class="btn-random" onclick="loadRandom()">🎲</button>
+                    <button class="btn-fav" onclick="openFavorites()">❤️ <span id="favCount"></span></button>
+                    <button class="btn-theme" onclick="toggleTheme()">🌓</button>`;
+            }
+            updateFavCount();
+        }
+
+        // === ИЗБРАННОЕ (через сервер) ===
+        async function loadFavorites() {
+            if (!currentUser) return;
+            const res = await fetch(API + '/favorites', { headers: { 'User-Id': currentUser.id } });
+            const data = await res.json();
+            favorites = data.data || [];
+            updateFavCount();
+        }
+
+        async function toggleFavorite(id, title, img, btn) {
+            if (!currentUser) {
+                alert('Войдите в аккаунт, чтобы добавлять в избранное');
+                return;
+            }
+            const res = await fetch(API + '/favorites', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'User-Id': currentUser.id },
+                body: JSON.stringify({ anime_id: id, anime_title: title, anime_image: img })
+            });
+            const data = await res.json();
+            if (data.success) {
+                if (btn) {
+                    if (data.action === 'added') { btn.classList.add('active'); btn.textContent = '❤️'; }
+                    else { btn.classList.remove('active'); btn.textContent = '🤍'; }
+                }
+                loadFavorites();
+            }
+        }
+
+        function updateFavCount() {
+            const el = document.getElementById('favCount');
+            if (el) el.textContent = favorites.length > 0 ? `(${favorites.length})` : '';
+        }
+
+        function openFavorites() {
+            document.getElementById('favoritesPanel').classList.add('open');
+            document.getElementById('favoritesOverlay').classList.add('open');
+            renderFavorites();
+        }
+
+        function closeFavorites() {
+            document.getElementById('favoritesPanel').classList.remove('open');
+            document.getElementById('favoritesOverlay').classList.remove('open');
+        }
+
+        function renderFavorites() {
+            const list = document.getElementById('favoritesList');
+            if (favorites.length === 0) {
+                list.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 2rem;">Пока пусто</p>';
+            } else {
+                list.innerHTML = favorites.map(f => `
+                    <div class="fav-item">
+                        <img src="${f.anime_image}" alt="${f.anime_title}" onclick="showDetails(${f.anime_id}); closeFavorites();">
+                        <div class="fav-item-content" onclick="showDetails(${f.anime_id}); closeFavorites();">
+                            <div class="fav-item-title">${f.anime_title}</div>
+                        </div>
+                        <button class="fav-item-remove" onclick="event.stopPropagation(); toggleFavorite(${f.anime_id}); renderFavorites();">🗑️</button>
+                    </div>`).join('');
+            }
+        }
+
+        // === API ===
+        async function fetchAPI(endpoint) {
+            try {
+                const res = await fetch(API + endpoint);
+                if (!res.ok) throw new Error('Ошибка сети');
+                return await res.json();
+            } catch (e) { console.error(e); return null; }
+        }
+
+        async function loadData(endpoint, page = 1) {
+            resetGridStyles();
+            currentEndpoint = endpoint;
+            currentPage = page;
+            const grid = getGrid();
+            grid.innerHTML = '<div class="loading"><div class="spinner"></div><p>Загрузка...</p></div>';
+            const separator = endpoint.includes('?') ? '&' : '?';
+            const data = await fetchAPI(`${endpoint}${separator}page=${page}`);
+            if (data && data.data && data.data.length > 0) {
+                renderCards(data.data);
+                renderPagination(data.pagination);
+            } else {
+                grid.innerHTML = '<div class="loading">Ничего не найдено</div>';
+            }
+        }
+
+        function resetGridAndLoad(endpoint) { resetGridStyles(); loadData(endpoint); }
+
+        async function searchAnime() {
+            const q = document.getElementById('searchInput').value.trim();
+            if (!q) return resetGridAndLoad('/anime/popular');
+            loadData(`/anime/search?q=${encodeURIComponent(q)}`);
+        }
+
+        function loadCurrentSeason() {
+            document.querySelectorAll('.season-btn').forEach(b => b.classList.remove('active'));
+            resetGridAndLoad('/anime/season');
+        }
+
+        function loadSeason(year, season) {
+            document.querySelectorAll('.season-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            resetGridAndLoad(`/anime/season/${year}/${season}`);
+        }
+
+        async function loadRandom() {
+            const grid = getGrid();
+            resetGridStyles();
+            grid.innerHTML = '<div class="loading"><div class="spinner"></div><p>🎲 Ищем случайное...</p></div>';
+            document.getElementById('pagination').style.display = 'none';
+            try {
+                const response = await fetch('https://api.jikan.moe/v4/random/anime');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const result = await response.json();
+                if (result && result.data) renderRandomCard(result.data);
+                else throw new Error('Нет данных');
+            } catch (error) {
+                grid.innerHTML = '<div class="loading"><p>😕 Не удалось загрузить</p></div>';
+            }
+        }
+
+        function renderRandomCard(anime) {
+            const grid = getGrid();
+            const img = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || 'https://via.placeholder.com/500x700/2a2a4a/ffffff?text=No+Image';
+            const isFav = favorites.some(f => f.anime_id === anime.mal_id);
+            grid.style.display = 'flex'; grid.style.justifyContent = 'center'; grid.style.alignItems = 'center';
+            grid.style.minHeight = '70vh'; grid.style.padding = '2rem';
+            grid.innerHTML = `
+                <div class="random-card"><div class="random-card-inner">
+                    <div class="random-card-image"><img src="${img}" alt="${anime.title}">
+                        ${anime.score ? `<span class="random-score">⭐ ${anime.score}</span>` : ''}
+                        <button class="fav-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite(${anime.mal_id}, '${anime.title.replace(/'/g, "\\'")}', '${img}', this); event.stopPropagation();">${isFav ? '❤️' : '🤍'}</button>
+                    </div>
+                    <div class="random-card-info">
+                        <h2>${anime.title}</h2>
+                        <div class="random-meta">
+                            <span class="random-badge">${anime.type || 'N/A'}</span>
+                            <span class="random-badge">${anime.episodes ? anime.episodes + ' эп.' : '? эп.'}</span>
+                            <span class="random-badge">${anime.status || 'N/A'}</span>
+                        </div>
+                        <div class="random-genres">${(anime.genres || []).map(g => `<span class="random-genre">${g.name}</span>`).join('')}</div>
+                        ${anime.synopsis ? `<div class="random-synopsis"><strong>Описание:</strong><p>${anime.synopsis.substring(0, 400)}...</p></div>` : ''}
+                        <div class="random-actions">
+                            <button class="btn-random" onclick="loadRandom()">🎲 Другое</button>
+                            <button class="btn-search" onclick="showDetails(${anime.mal_id})">📋 Подробнее</button>
+                        </div>
+                    </div>
+                </div></div>`;
+        }
+
+        function renderCards(animes) {
+            getGrid().innerHTML = animes.map(anime => {
+                const img = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || 'https://via.placeholder.com/300x450/2a2a4a/ffffff?text=No+Image';
+                const isFav = favorites.some(f => f.anime_id === anime.mal_id);
+                return `<div class="card"><div class="card-img">
+                    <img src="${img}" alt="${anime.title}" loading="lazy" onclick="showDetails(${anime.mal_id})">
+                    <button class="fav-btn ${isFav ? 'active' : ''}" onclick="event.stopPropagation(); toggleFavorite(${anime.mal_id}, '${anime.title.replace(/'/g, "\\'")}', '${img}', this)">${isFav ? '❤️' : '🤍'}</button>
+                    ${anime.score ? `<span class="score">⭐${anime.score}</span>` : ''}
+                </div><div class="info" onclick="showDetails(${anime.mal_id})">
+                    <h2>${anime.title}</h2>
+                    <div class="genres">${(anime.genres || []).slice(0, 3).map(g => `<span class="genre">${g.name}</span>`).join('')}</div>
+                    <div class="meta"><span>${anime.type || ''}</span><span>${anime.episodes || '?'} эп.</span></div>
+                </div></div>`;
+            }).join('');
+        }
+
+        function renderPagination(pagination) {
+            const pagDiv = document.getElementById('pagination');
+            if (!pagination || !pagination.last_visible_page || pagination.last_visible_page <= 1) { pagDiv.style.display = 'none'; return; }
+            pagDiv.style.display = 'flex';
+            pagDiv.innerHTML = `
+                <button ${currentPage <= 1 ? 'disabled' : ''} onclick="loadData('${currentEndpoint}', ${currentPage - 1})">← Назад</button>
+                <span class="page-info">Страница ${currentPage} из ${pagination.last_visible_page}</span>
+                <button ${!pagination.has_next_page ? 'disabled' : ''} onclick="loadData('${currentEndpoint}', ${currentPage + 1})">Вперед →</button>`;
+        }
+
+        async function showDetails(id) {
+            const data = await fetchAPI('/anime/' + id);
+            if (!data || !data.data) return;
+            const a = data.data;
+            document.getElementById('modalBody').innerHTML = `
+                ${a.images?.jpg?.large_image_url ? `<img src="${a.images.jpg.large_image_url}" alt="${a.title}">` : ''}
+                <h2>${a.title}</h2>
+                <p><strong>Год:</strong> ${a.year || '—'} | <strong>Эпизоды:</strong> ${a.episodes || '?'} | <strong>Рейтинг:</strong> ⭐${a.score || '—'}</p>
+                <p><strong>Тип:</strong> ${a.type || '—'} | <strong>Статус:</strong> ${a.status || '—'}</p>
+                <p><strong>Жанры:</strong> ${(a.genres || []).map(g => g.name).join(', ')}</p>
+                <p><strong>Студия:</strong> ${(a.studios || []).map(s => s.name).join(', ') || 'Неизвестно'}</p>
+                ${a.synopsis ? `<div class="synopsis"><strong>Описание:</strong><br>${a.synopsis}</div>` : ''}
+                <div style="display:flex; gap:10px; margin-top:1.5rem;">
+                    <button class="btn-top" onclick="event.stopPropagation(); watchAnime(${a.mal_id}, '${(a.title || '').replace(/'/g, "\\'")}')">▶ Смотреть</button>
+                </div>
+            `;
+            openModal('animeModal');
+        }
+
+async function watchAnime(id, title) {
+    closeModal('animeModal');
+    
+    const grid = getGrid();
+    resetGridStyles();
+    grid.innerHTML = '<div class="loading"><div class="spinner"></div><p>🎬 Ищем на Kodik...</p></div>';
+    document.getElementById('pagination').style.display = 'none';
+    
+    try {
+        // Ищем на Kodik по shikimori_id (точный поиск!)
+        const searchRes = await fetch(`${API}/kodik/search?shikimori_id=${id}`);
+        const searchData = await searchRes.json();
+        let results = searchData?.results || [];
+        
+        // Если не нашли по ID — ищем по названию
+        if (results.length === 0) {
+            const nameRes = await fetch(`${API}/kodik/search?title=${encodeURIComponent(title)}`);
+            const nameData = await nameRes.json();
+            results = nameData?.results || [];
+        }
+        
+        grid.style.display = 'block';
+        grid.style.padding = '1rem';
+        grid.style.maxWidth = '1100px';
+        grid.style.margin = '0 auto';
+        
+        if (results.length > 0) {
+            const anime = results[0];
+            const link = anime.link.replace('//', 'https://');
+            
+            grid.innerHTML = `
+                <div class="player-page">
+                    <div class="player-top-bar">
+                        <button class="btn-search" onclick="showDetails(${id})">← Назад</button>
+                        <div style="flex:1;">
+                            <h2>▶ ${anime.title || title}</h2>
+                            <span style="color:var(--text-secondary); font-size:0.8rem;">
+                                ${anime.translation?.title || ''} | ${anime.quality || ''}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="player-wrapper">
+                        <iframe src="${link}" frameborder="0" allowfullscreen 
+                            allow="autoplay; encrypted-media; picture-in-picture"
+                            style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;">
+                        </iframe>
+                    </div>
+                </div>
+                <style>
+                    .player-page { background:var(--bg); border-radius:15px; overflow:hidden; border:1px solid var(--border); }
+                    .player-top-bar { display:flex; align-items:center; gap:1rem; padding:1rem 1.5rem; background:var(--header-bg); }
+                    .player-wrapper { position:relative; width:100%; padding-top:56.25%; background:#000; }
+                </style>
+            `;
+        } else {
+            grid.innerHTML = `
+                <div style="text-align:center; padding:3rem;">
+                    <button class="btn-search" onclick="showDetails(${id})">← Назад</button>
+                    <h2 style="margin:1.5rem 0;">${title}</h2>
+                    <p>Не найдено на Kodik</p>
+                </div>
+            `;
+        }
+    } catch (error) {
+        grid.innerHTML = '<div class="loading"><p>Ошибка</p></div>';
+    }
+}
+
+        function changeQuality(quality, id, hash) {
+            const iframe = document.getElementById('kodikPlayer');
+            if (iframe) {
+                iframe.src = `https://kodik.info/serial/${id}/${hash}/${quality}`;
+            }
+        }
+
+        function changeQuality(quality, id, hash) {
+            const iframe = document.getElementById('kodikPlayer');
+            if (iframe) {
+                iframe.src = `https://kodik.info/serial/${id}/${hash}/${quality}`;
+            }
+        }
+
+function switchPlayer(url) {
+    const iframe = document.getElementById('mainPlayer');
+    if (iframe) {
+        iframe.src = url;
+    }
+}
+
+function openInNewTab(url) {
+    window.open(url, '_blank');
+}
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-theme');
+            localStorage.setItem('theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
+        }
+
+        async function loadGenres() {
+            const data = await fetchAPI('/genres');
+            if (data && data.data) {
+                document.getElementById('genreFilter').innerHTML = data.data.slice(0, 15).map(g => 
+                    `<button class="genre-btn" onclick="filterByGenre(${g.mal_id}, this)">${g.name}</button>`).join('');
+            }
+        }
+
+        function filterByGenre(id, btn) {
+            document.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            resetGridAndLoad(`/anime/genre/${id}`);
+        }
+
+        window.onclick = function(e) { if (e.target.classList.contains('modal')) e.target.style.display = 'none'; };
+
+        // === ИНИЦИАЛИЗАЦИЯ ===
+        if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-theme');
+        updateAuthUI();
+        loadData('/anime/popular');
+        loadGenres();
+        if (currentUser) loadFavorites();
+    </script>
+</body>
+</html>

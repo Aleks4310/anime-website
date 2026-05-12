@@ -1,0 +1,5 @@
+node_modules/
+anime.db
+*.db
+__pycache__/
+.env

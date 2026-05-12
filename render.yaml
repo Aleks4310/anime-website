@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: anime-catalog
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    plan: free
+    envVars:
+      - key: KODIK_PROXY_URL
+        value: https://anime-catalog-kodik.onrender.com
+
+  - type: web
+    name: anime-catalog-kodik
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python kodik_proxy.py
+    plan: free
