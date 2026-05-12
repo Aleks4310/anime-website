@@ -228,6 +228,12 @@ app.get('/test', (req, res) => {
     res.json({ status: 'ok', db: 'SQLite' });
 });
 
+const path = require('path');
+app.use(express.static(__dirname));
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 app.listen(PORT, () => {
     console.log('=========================================');
     console.log(`🚀 Сервер на http://localhost:${PORT}`);
